@@ -24,17 +24,26 @@ export function activate(context: vscode.ExtensionContext) {
             const switches: Array<[string[], string[]]> = [
                 [
                     ["tsx", "ts", "jsx", "js"],
-                    ["module.css", "module.scss", "css", "scss"],
+                    [
+                        "module.css",
+                        "module.scss",
+                        "css",
+                        "scss",
+                        "vert",
+                        "frag",
+                    ],
                 ],
                 [
                     ["module.css", "module.scss", "css", "scss"],
                     ["tsx", "ts", "jsx", "js"],
                 ],
+                [["vert"], ["frag", "ts", "js", "tsx", "jsx"]],
+                [["frag"], ["ts", "js", "tsx", "jsx", "vert"]],
             ]
             const { fileName } = editor.document
             for (const [inputs, outputs] of switches) {
                 for (const input of inputs) {
-                    if (fileName.endsWith(input)) {
+                    if (fileName.endsWith(`.${input}`)) {
                         for (const output of outputs) {
                             const targetFileName = `${fileName.substring(
                                 0,
