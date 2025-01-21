@@ -1,25 +1,83 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import * as vscode from "vscode"
+import nodeFS from "node:fs"
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+    // The command has been defined in the package.json file
+    // Now provide the implementation of the command with registerCommand
+    // The commandId parameter must match the command field in package.json
+    const disposable = vscode.commands.registerCommand(
+        "tolokoban-quick-file-switcher.switch",
+        () => {
+            const editor = vscode.window.activeTextEditor
+            if (!editor) {
+                // The code you place here will be executed every time your command is executed
+                // Display a message box to the user
+                vscode.window.showErrorMessage(
+                    "This command works only with an active editor!"
+                )
+                return
+            }
+            const switches: Array<[string[], string[]]> = [
+                [
+                    ["tsx", "ts"],
+                    ["module.css", "module.scss", "css", "scss"],
+                ],
+                [
+                    ["module.css", "module.scss", "css", "scss"],
+                    ["tsx", "ts"],
+                ],
+            ]
+            const { fileName } = editor.document
+            for (const [inputs, outputs] of switches) {
+                for (const input of inputs) {
+                    if (fileName.endsWith(input)) {
+                        for (const output of outputs) {
+                            const targetFileName = `${fileName.substring(
+                                0,
+                                fileName.length - input.length
+                            )}${output}`
+                            if (!nodeFS.existsSync(targetFileName)) {
+                                continue
+                            }
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "tolokoban-quick-file-switcher" is now active!');
+                            vscode.workspace
+                                .openTextDocument(targetFileName)
+                                .then(
+                                    (document: vscode.TextDocument) => {
+                                        vscode.window.showTextDocument(document)
+                                        vscode.window.showInformationMessage(
+                                            "Done."
+                                        )
+                                    },
+                                    (reason: any) => {
+                                        vscode.window.showErrorMessage(reason)
+                                    }
+                                )
+                            vscode.window.showInformationMessage(
+                                `Switched to "${base(targetFileName)}".`
+                            )
+                            return
+                        }
+                        return
+                    }
+                }
+            }
+            vscode.window.showInformationMessage(
+                `Don't know how to switch from this file: "${fileName}"!`
+            )
+        }
+    )
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('tolokoban-quick-file-switcher.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from tolokoban-quick-file-switcher!');
-	});
+    context.subscriptions.push(disposable)
+}
 
-	context.subscriptions.push(disposable);
+function base(path: string) {
+    const parts = path.split("/")
+    return parts.pop()
 }
 
 // This method is called when your extension is deactivated
