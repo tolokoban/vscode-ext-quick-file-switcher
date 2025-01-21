@@ -23,12 +23,12 @@ export function activate(context: vscode.ExtensionContext) {
             }
             const switches: Array<[string[], string[]]> = [
                 [
-                    ["tsx", "ts"],
+                    ["tsx", "ts", "jsx", "js"],
                     ["module.css", "module.scss", "css", "scss"],
                 ],
                 [
                     ["module.css", "module.scss", "css", "scss"],
-                    ["tsx", "ts"],
+                    ["tsx", "ts", "jsx", "js"],
                 ],
             ]
             const { fileName } = editor.document
