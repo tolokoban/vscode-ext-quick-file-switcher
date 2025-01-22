@@ -34,11 +34,11 @@ export function activate(context: vscode.ExtensionContext) {
                 "spec.js",
             ]
             const switches: Array<[string[], string[]]> = [
+                [TEST, TS],
                 [TS, [...CSS, "vert", "frag", ...TEST]],
                 [CSS, [...TEST, ...TS]],
                 [["vert"], ["frag", ...TEST, ...TS]],
                 [["frag"], [...TEST, ...TS, "vert"]],
-                [TEST, TS],
             ]
             const { fileName } = editor.document
             for (const [inputs, outputs] of switches) {
