@@ -21,24 +21,24 @@ export function activate(context: vscode.ExtensionContext) {
                 )
                 return
             }
+            const TS = ["tsx", "ts", "jsx", "js"]
+            const CSS = ["module.css", "module.scss", "css", "scss"]
+            const TEST = [
+                "test.tsx",
+                "test.ts",
+                "test.jsx",
+                "test.js",
+                "spec.tsx",
+                "spec.ts",
+                "spec.jsx",
+                "spec.js",
+            ]
             const switches: Array<[string[], string[]]> = [
-                [
-                    ["tsx", "ts", "jsx", "js"],
-                    [
-                        "module.css",
-                        "module.scss",
-                        "css",
-                        "scss",
-                        "vert",
-                        "frag",
-                    ],
-                ],
-                [
-                    ["module.css", "module.scss", "css", "scss"],
-                    ["tsx", "ts", "jsx", "js"],
-                ],
-                [["vert"], ["frag", "ts", "js", "tsx", "jsx"]],
-                [["frag"], ["ts", "js", "tsx", "jsx", "vert"]],
+                [TS, [...CSS, "vert", "frag", ...TEST]],
+                [CSS, [...TEST, ...TS]],
+                [["vert"], ["frag", ...TEST, ...TS]],
+                [["frag"], [...TEST, ...TS, "vert"]],
+                [TEST, TS],
             ]
             const { fileName } = editor.document
             for (const [inputs, outputs] of switches) {
