@@ -34,6 +34,10 @@ export function activate(context: vscode.ExtensionContext) {
                     file => file.isFile() && file.name.startsWith(commonPrefix)
                 )
                 .map(file => file.name)
+            if (siblings.length < 2) {
+                vscode.window.showErrorMessage(`No file to switch to.`)
+                return
+            }
             const currentIndex = siblings.findIndex(
                 name => name === fileBaseName
             )
@@ -44,14 +48,17 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.workspace.openTextDocument(targetFileName).then(
                 (document: vscode.TextDocument) => {
                     vscode.window.showTextDocument(document)
-                    vscode.window.showInformationMessage("Done.")
+                    vscode.window.showInformationMessage(
+                        siblings
+                            .map((name, index) =>
+                                index === currentIndex ? ` (${name}) ` : name
+                            )
+                            .join(" | ")
+                    )
                 },
                 (reason: any) => {
                     vscode.window.showErrorMessage(reason)
                 }
-            )
-            vscode.window.showInformationMessage(
-                `Switched to "${base(targetFileName)}".`
             )
         }
     )
