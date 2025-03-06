@@ -6,7 +6,7 @@
         "type": "git",
         "url": "git@github.com:tolokoban/vscode-ext-quick-file-switcher.git"
     },
-    "version": "0.1.3",
+    "version": "0.2.0",
     "engines": {
         "vscode": "^1.96.0"
     },

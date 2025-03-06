@@ -1,7 +1,8 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode"
-import nodeFS from "node:fs"
+import nodeFS, { readdirSync } from "node:fs"
+import { basename, dirname } from "node:path"
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -21,62 +22,34 @@ export function activate(context: vscode.ExtensionContext) {
                 )
                 return
             }
-            const TS = ["tsx", "ts", "jsx", "js"]
-            const CSS = ["module.css", "module.scss", "css", "scss"]
-            const TEST = [
-                "test.tsx",
-                "test.ts",
-                "test.jsx",
-                "test.js",
-                "spec.tsx",
-                "spec.ts",
-                "spec.jsx",
-                "spec.js",
-            ]
-            const switches: Array<[string[], string[]]> = [
-                [TEST, TS],
-                [TS, [...CSS, "vert", "frag", ...TEST]],
-                [CSS, [...TEST, ...TS]],
-                [["vert"], ["frag", ...TEST, ...TS]],
-                [["frag"], [...TEST, ...TS, "vert"]],
-            ]
             const { fileName } = editor.document
-            for (const [inputs, outputs] of switches) {
-                for (const input of inputs) {
-                    if (fileName.endsWith(`.${input}`)) {
-                        for (const output of outputs) {
-                            const targetFileName = `${fileName.substring(
-                                0,
-                                fileName.length - input.length
-                            )}${output}`
-                            if (!nodeFS.existsSync(targetFileName)) {
-                                continue
-                            }
-
-                            vscode.workspace
-                                .openTextDocument(targetFileName)
-                                .then(
-                                    (document: vscode.TextDocument) => {
-                                        vscode.window.showTextDocument(document)
-                                        vscode.window.showInformationMessage(
-                                            "Done."
-                                        )
-                                    },
-                                    (reason: any) => {
-                                        vscode.window.showErrorMessage(reason)
-                                    }
-                                )
-                            vscode.window.showInformationMessage(
-                                `Switched to "${base(targetFileName)}".`
-                            )
-                            return
-                        }
-                        return
-                    }
+            const dirName = dirname(fileName)
+            const fileBaseName = basename(fileName)
+            const commonPrefix = `${fileBaseName.split(".")[0]}.`
+            const siblings = readdirSync(dirName, {
+                withFileTypes: true,
+                recursive: false,
+            })
+                .filter(
+                    file => file.isFile() && file.name.startsWith(commonPrefix)
+                )
+                .map(file => file.name)
+            const currentIndex = siblings.findIndex(
+                name => name === fileBaseName
+            )
+            const targetFileName =
+                siblings[(currentIndex + 1) % siblings.length] ?? fileBaseName
+            vscode.workspace.openTextDocument(targetFileName).then(
+                (document: vscode.TextDocument) => {
+                    vscode.window.showTextDocument(document)
+                    vscode.window.showInformationMessage("Done.")
+                },
+                (reason: any) => {
+                    vscode.window.showErrorMessage(reason)
                 }
-            }
+            )
             vscode.window.showInformationMessage(
-                `Don't know how to switch from this file: "${fileName}"!`
+                `Switched to "${base(targetFileName)}".`
             )
         }
     )

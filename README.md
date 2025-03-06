@@ -1,24 +1,25 @@
-# tolokoban-quick-file-switcher README
+# tolokoban-quick-file-switcher
 
-This extension is a simple quick file switcher between js/ts files and css files.
+This extension is a simple quick file switcher betwee files with the same prefix.
 
-## Features
+When activated, the extension extract the prefix of the active file in the editor.
+The __prefix__ is the part of the file name before the first dot.
 
-This extension is a simple quick file switcher between js/ts files and css files.
+Here are some examples of prefixes (in bold):
 
-## Requirements
+- __button.__ tsx
+- __button.__ test.tsx
+- __button.__ module.css
+- __button.__ jpg
 
-No requirement.
+And we switch to the next file in the list of all the files of the same folder with the same prefix.
 
-## Extension Settings
-
-No settings yet.
-
-## Known Issues
-
-No known issue yet.
 
 ## Release Notes
+
+### 0.2.0
+
+No restriction on the extension.
 
 ### 0.1.0
 
